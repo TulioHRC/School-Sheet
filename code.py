@@ -46,6 +46,7 @@ class MainApp():
 	def __init__(self, master):
 		self.master = master
 		self.master.title('Planilha de para casas')
+		self.master.iconbitmap('./images/alarm.ico')
 
 		Label(text="Para casas").grid(row=0, column=1)
 
@@ -124,6 +125,7 @@ class delLevel(MainApp):
 	def __init__(self):
 		self.newScreen = Toplevel()
 		self.newScreen.title("Deletar para-casa")
+		self.newScreen.iconbitmap('./images/alarm.ico')
 
 		Label(self.newScreen, text="Matéria: ").grid(row=0, column=0, padx=2, pady=2)
 		self.subject = StringVar()
@@ -162,6 +164,7 @@ class delLevel(MainApp):
 			self.save()
 
 			app.reload_sheets()
+			self.newScreen.destroy()
 		except Exception as e:
 			print(e)
 			messagebox.showerror("Error", "Houve um erro na criação do para casa.")
@@ -185,6 +188,7 @@ class newLevel(MainApp):
 	def __init__(self):
 		self.newScreen = Toplevel()
 		self.newScreen.title("Novo para-casa")
+		self.newScreen.iconbitmap('./images/alarm.ico')
 
 		Label(self.newScreen, text="Nome: ").grid(row=0, column=0, padx=2, pady=2)
 		self.name = Entry(self.newScreen)
@@ -259,6 +263,7 @@ class newLevel(MainApp):
 			writer.save()
 
 			app.reload_sheets()
+			self.newScreen.destroy()
 		except Exception as e:
 			print(e)
 			messagebox.showerror("Error", "Houve um erro na criação do para casa.")
