@@ -10,3 +10,4 @@ My Using app:
 # Possible Upgrades
 - Add and delete subjects
 - Add and delete types
+- English mode
