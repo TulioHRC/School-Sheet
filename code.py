@@ -5,9 +5,19 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from tkcalendar import *
 from pandas import ExcelWriter
+from subjectFuncs import *
 
+''' Adding the subjects
 subs_norm = ["Mat", "Port", "Bio", "Fis", "Qui", "Geo", "His", "Fil", "Ed.F.", "Art", "Ing", "Red"]
+for n in subs_norm:
+	addSubject(n, 'Médio')
 subs_tec = ["CE 2", "CAD", "MTRM", "Elet A", "Acionamentos", "Sistemas digitais"]
+for n in subs_tec:
+	addSubject(n, 'Técnico')
+'''
+df = seeSubjects()
+subs_norm = df[df["type"] == 'Médio'].name.values
+subs_tec = df[df["type"] == 'Técnico'].name.values
 
 def load_excel():
 	hj = date.today()
@@ -50,6 +60,8 @@ class MainApp():
 
 		Label(text="Para casas").grid(row=0, column=1)
 
+		Button(self.master, text="Config", command=config).grid(row=0, column=2, pady=5)
+
 		self.tabs = ttk.Notebook(self.master)
 		self.tabs.grid(row=1, column=0, columnspan=3)
 
@@ -68,8 +80,8 @@ class MainApp():
 		self.load_sheet(self.medio)
 		self.load_sheet(self.tec)
 
-		Button(self.master, text="Novo", command=newLevel).grid(row=2, column=0, pady=5)
-		Button(self.master, text="Deletar", command=delLevel).grid(row=2, column=2, pady=5)
+		Button(self.master, text="Novo :(", command=newLevel).grid(row=2, column=0, pady=5)
+		Button(self.master, text="Deletar :)", command=delLevel).grid(row=2, column=2, pady=5)
 
 	def load_sheet(self, frame):
 		med, tec = load_excel()
@@ -120,6 +132,52 @@ class MainApp():
  		self.load_sheet(self.tec)
 
  		print('reloaded')
+
+class config(MainApp):
+	def __init__(self):
+		self.newScreen = Toplevel()
+		self.newScreen.title("Configurações")
+		self.newScreen.iconbitmap('./images/alarm.ico')
+
+		self.tabs = ttk.Notebook(self.newScreen)
+		self.tabs.grid(row=0, column=0, pady=2, columnspan=3)
+
+		self.subjects = Frame(self.tabs, width=450, height=300)
+		self.killSubjects = Frame(self.tabs, width=450, height=300)
+
+		self.subjects.pack(fill='both', expand=True)
+		self.killSubjects.pack(fill='both', expand=True)
+
+		self.tabs.add(self.subjects, text="Adicionar Matérias")
+		self.tabs.add(self.killSubjects, text="Remover Matérias")
+
+		self.subjectsFrame()
+		self.killSubjectsFrame()
+
+	def subjectsFrame(self):
+		Label(self.subjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+		self.name = Entry(self.subjects)
+		self.name.grid(row=0, column=1, pady=5, padx=5)
+
+		Label(self.subjects, text="Type: ").grid(row=1, column=0, padx=2, pady=2)
+		self.type = StringVar()
+		self.type.set('Médio')
+		self.t = OptionMenu(self.subjects, self.type, *["Médio", "Técnico"])
+		self.t.grid(row=1, column=1)
+
+		Button(self.subjects, text="Add Subject", command=lambda: addSubject(self.name.get(), self.type.get())).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
+
+	def killSubjectsFrame(self):
+		materias = seeSubjects()
+
+		Label(self.killSubjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+		self.namek = StringVar()
+		self.nk = OptionMenu(self.killSubjects, self.namek, *materias["name"].values)
+		self.nk.grid(row=0, column=1)
+
+		Button(self.killSubjects, text="Remove Subject", command=lambda: removeSubject(self.namek.get())).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
+
+
 
 class delLevel(MainApp):
 	def __init__(self):
