@@ -11,3 +11,4 @@ My Using app:
 - Add and delete subjects
 - Add and delete types
 - English mode
+- Organize better the classes
