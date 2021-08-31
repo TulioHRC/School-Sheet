@@ -8,6 +8,6 @@ My Using app:
 
 
 # Possible Upgrades
-- Add and delete subjects
-- Add and delete types
+- Auto-restart after subject creation
 - English mode
+- Organize better the classes into arquives
