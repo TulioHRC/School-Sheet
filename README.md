@@ -9,4 +9,4 @@ My Using app:
 
 # Possible Upgrades
 - English mode
-- Organize better the classes into arquives
+- Organize better the classes into arquives (clean the code)
