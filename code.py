@@ -15,6 +15,7 @@ subs_tec = ["CE 2", "CAD", "MTRM", "Elet A", "Acionamentos", "Sistemas digitais"
 for n in subs_tec:
 	addSubject(n, 'Técnico')
 '''
+
 df = seeSubjects()
 subs_norm = df[df["type"] == 'Médio'].name.values
 subs_tec = df[df["type"] == 'Técnico'].name.values
@@ -165,7 +166,7 @@ class config(MainApp):
 		self.t = OptionMenu(self.subjects, self.type, *["Médio", "Técnico"])
 		self.t.grid(row=1, column=1)
 
-		Button(self.subjects, text="Add Subject", command=lambda: addSubject(self.name.get(), self.type.get())).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
+		Button(self.subjects, text="Add Subject", command=lambda: addSubject(self.name.get(), self.type.get(), app, main)).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
 
 	def killSubjectsFrame(self):
 		materias = seeSubjects()
@@ -175,7 +176,7 @@ class config(MainApp):
 		self.nk = OptionMenu(self.killSubjects, self.namek, *materias["name"].values)
 		self.nk.grid(row=0, column=1)
 
-		Button(self.killSubjects, text="Remove Subject", command=lambda: removeSubject(self.namek.get())).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
+		Button(self.killSubjects, text="Remove Subject", command=lambda: removeSubject(self.namek.get(), app, main)).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
 
 
 

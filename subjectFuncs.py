@@ -1,4 +1,6 @@
 import sqlite3
+import os
+import sys
 import pandas as pd
 from tkinter import messagebox
 
@@ -27,7 +29,7 @@ def seeSubjects():
         messagebox.showerror('Erro', f'Não foi possível vizualizar as matérias do banco de dados. \nErro: {e}')
         return 'Error'
 
-def addSubject(name, type):
+def addSubject(name, type, app, main):
     try:
         con = sqlite3.connect('./data/data.sqlite')
         cur = con.cursor()
@@ -37,12 +39,15 @@ def addSubject(name, type):
 
         cur.close()
         messagebox.showinfo('Succeed', f'A matéria "{name}" de {type} foi salva!\nPara atualizar os dados reinicie o applicativo.')
+        
+        app.master.destroy()
+        main()
     except Exception as e:
         print(e)
         messagebox.showerror('Erro', f'Houve um erro ao tentar inserir a matéria "{name}" no banco de dados. \nErro: {e}')
 
 
-def removeSubject(name):
+def removeSubject(name, app, main):
     try:
         con = sqlite3.connect('./data/data.sqlite')
         cur = con.cursor()
@@ -52,6 +57,8 @@ def removeSubject(name):
 
         cur.close()
         messagebox.showinfo('Succeed', f'A matéria "{name}" foi removida!\nPara atualizar os dados reinicie o applicativo.')
+        app.master.destroy()
+        main()
     except Exception as e:
         print(e)
         messagebox.showerror('Erro', f'Houve um erro ao tentar remover a matéria "{name}" do banco de dados. \nErro: {e}')

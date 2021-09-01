@@ -8,6 +8,5 @@ My Using app:
 
 
 # Possible Upgrades
-- Auto-restart after subject creation
 - English mode
 - Organize better the classes into arquives
