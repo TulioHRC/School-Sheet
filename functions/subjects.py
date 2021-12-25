@@ -14,11 +14,11 @@ def seeSubjects():
             'type': [],
         }
 
-        cur.execute('SELECT name, type FROM Subjects')
+        cur.execute('SELECT * FROM Subjects')
         for row in cur:
             data['name'].append(row[0])
             data['type'].append(row[1])
-        
+
         df = pd.DataFrame(data=data)
 
         cur.close()
@@ -27,7 +27,7 @@ def seeSubjects():
     except Exception as e:
         print(e)
         messagebox.showerror('Erro', f'Não foi possível vizualizar as matérias do banco de dados. \nErro: {e}')
-        return 'Error'
+        return {}
 
 def addSubject(name, type, app, main):
     try:
@@ -35,11 +35,11 @@ def addSubject(name, type, app, main):
         cur = con.cursor()
 
         cur.execute('INSERT INTO Subjects (name, type) VALUES (?, ?)', (name, type))
-        con.commit()  
+        con.commit()
 
         cur.close()
         messagebox.showinfo('Succeed', f'A matéria "{name}" de {type} foi salva!\nPara atualizar os dados reinicie o applicativo.')
-        
+
         app.master.destroy()
         main()
     except Exception as e:
@@ -53,7 +53,7 @@ def removeSubject(name, app, main):
         cur = con.cursor()
 
         cur.execute('DELETE FROM Subjects WHERE name=?',  (name,))
-        con.commit()  
+        con.commit()
 
         cur.close()
         messagebox.showinfo('Succeed', f'A matéria "{name}" foi removida!\nPara atualizar os dados reinicie o applicativo.')
