@@ -133,15 +133,18 @@ class config(MainApp):
 		), self.type.get(), app, main)).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
 
 	def killSubjectsFrame(self):
-		materias = subjects.seeSubjects()
+		try:
+			materias = subjects.seeSubjects()
 
-		Label(self.killSubjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
-		self.namek = StringVar()
-		self.nk = OptionMenu(self.killSubjects, self.namek, *materias["name"].values)
-		self.nk.grid(row=0, column=1)
+			Label(self.killSubjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+			self.namek = StringVar()
+			self.nk = OptionMenu(self.killSubjects, self.namek, *materias["name"].values)
+			self.nk.grid(row=0, column=1)
 
-		Button(self.killSubjects, text="Remove Subject", command=lambda: subjects.removeSubject(
-			self.namek.get(), app, main)).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
+			Button(self.killSubjects, text="Remove Subject", command=lambda: subjects.removeSubject(
+				self.namek.get(), app, main)).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
+		except:
+			Label(self.killSubjects, text="Subjects are not created yet.").grid(row=0, column=0, pady=5, padx=5)
 
 
 class delLevel(MainApp):
@@ -150,17 +153,21 @@ class delLevel(MainApp):
 		self.newScreen.title("Deletar para-casa")
 		self.newScreen.iconbitmap('./images/alarm.ico')
 
-		Label(self.newScreen, text="Matéria: ").grid(row=0, column=0, padx=2, pady=2)
-		self.subject = StringVar()
-		self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm+subs_tec, command=self.changeL)
-		self.Options.grid(row=0, column=1)
+		try:
+			Label(self.newScreen, text="Matéria: ").grid(row=0, column=0, padx=2, pady=2)
+			self.subject = StringVar()
+			self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm+subs_tec, command=self.changeL)
+			self.Options.grid(row=0, column=1)
 
-		Label(self.newScreen, text="Nome: ").grid(row=0, column=2, padx=2, pady=2)
-		self.name = StringVar()
-		self.n = OptionMenu(self.newScreen, self.name, "")
-		self.n.grid(row=0, column=3)
+			Label(self.newScreen, text="Nome: ").grid(row=0, column=2, padx=2, pady=2)
+			self.name = StringVar()
+			self.n = OptionMenu(self.newScreen, self.name, "")
+			self.n.grid(row=0, column=3)
 
-		Button(self.newScreen, text="Deletar", command=self.delete).grid(row=1, column=1, padx=2, pady=2)
+			Button(self.newScreen, text="Deletar", command=self.delete).grid(row=1, column=1, padx=2, pady=2)
+		except:
+			Label(self.newScreen, text="Subjects are not created yet.").grid(row=0, column=0, padx=2, pady=2)
+			Label(self.newScreen, text="Create them first.").grid(row=1, column=0, padx=2, pady=2)
 
 	def changeL(self, value):
 		df = pd.read_excel(r"./Homework.xlsx")
@@ -222,27 +229,36 @@ class newLevel(MainApp):
 		self.types = OptionMenu(self.newScreen, self.type, *["Medio", "Tecnico"], command=self.changeOps)
 		self.types.grid(row=1, column=1)
 
-		Label(self.newScreen, text="Matéria: ").grid(row=2, column=0, padx=2, pady=2)
-		self.subject = StringVar()
-		self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm)
-		self.Options.grid(row=2, column=1)
+		try:
+			Label(self.newScreen, text="Matéria: ").grid(row=2, column=0, padx=2, pady=2)
+			self.subject = StringVar()
+			self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm)
+			self.Options.grid(row=2, column=1)
 
-		Label(self.newScreen, text="Valor: ").grid(row=0, column=2, padx=2, pady=2)
-		self.val = Entry(self.newScreen)
-		self.val.grid(row=0, column=3, padx=2, pady=2)
+			Label(self.newScreen, text="Valor: ").grid(row=0, column=2, padx=2, pady=2)
+			self.val = Entry(self.newScreen)
+			self.val.grid(row=0, column=3, padx=2, pady=2)
 
-		Label(self.newScreen, text="Grupo: ").grid(row=1, column=2, padx=2, pady=2)
-		self.group = StringVar()
-		self.group.set('Nao')
-		self.g = OptionMenu(self.newScreen, self.group, *["Nao", "Sim"])
-		self.g.grid(row=1, column=3)
+			Label(self.newScreen, text="Grupo: ").grid(row=1, column=2, padx=2, pady=2)
+			self.group = StringVar()
+			self.group.set('Nao')
+			self.g = OptionMenu(self.newScreen, self.group, *["Nao", "Sim"])
+			self.g.grid(row=1, column=3)
 
-		act_date = str(date.today()).split("-")
-		Label(self.newScreen, text="Prazo: ").grid(row=2, column=2, padx=2, pady=2)
-		self.date = Calendar(self.newScreen, selectmode="day", year=int(act_date[0]), month=int(act_date[1]), day=int(act_date[2]))
-		self.date.grid(row=2, column=3, padx=2, pady=2)
+			act_date = str(date.today()).split("-")
+			Label(self.newScreen, text="Prazo: ").grid(row=2, column=2, padx=2, pady=2)
+			self.date = Calendar(self.newScreen, selectmode="day", year=int(act_date[0]), month=int(act_date[1]), day=int(act_date[2]))
+			self.date.grid(row=2, column=3, padx=2, pady=2)
 
-		Button(self.newScreen, text="Criar", command=self.create, width=20).grid(row=3, column=1)
+			Button(self.newScreen, text="Criar", command=self.create, width=20).grid(row=3, column=1)
+		except:
+			Label(self.newScreen, text="Subjects are not created yet.").grid(row=2, column=0, columnspan=2, padx=2, pady=2)
+			Label(self.newScreen, text="Create them first.").grid(row=3, column=0, columnspan=2, padx=2, pady=2)
+
+			self.types.destroy()
+			self.types = OptionMenu(self.newScreen, self.type, *[""])
+			self.types.grid(row=1, column=1)
+			self.type.set('')
 
 	def changeOps(self, value):
 		self.Options.destroy()
