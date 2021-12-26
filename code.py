@@ -7,6 +7,7 @@ from tkcalendar import *
 from pandas import ExcelWriter
 from functions import subjects
 from functions import excel
+from functions import files
 
 subjectsAll = subjects.seeSubjects()
 
@@ -106,17 +107,25 @@ class config(MainApp):
 		self.tabs = ttk.Notebook(self.newScreen)
 		self.tabs.grid(row=0, column=0, pady=2, columnspan=3)
 
+		self.configuration = Frame(self.tabs, width=450, height=300)
 		self.subjects = Frame(self.tabs, width=450, height=300)
 		self.killSubjects = Frame(self.tabs, width=450, height=300)
 
+		self.configuration.pack(fill='both', expand=True)
 		self.subjects.pack(fill='both', expand=True)
 		self.killSubjects.pack(fill='both', expand=True)
 
+		self.tabs.add(self.configuration, text="Configuration")
 		self.tabs.add(self.subjects, text="Adicionar Matérias")
 		self.tabs.add(self.killSubjects, text="Remover Matérias")
 
+		self.configurationsFrame()
 		self.subjectsFrame()
 		self.killSubjectsFrame()
+
+	def configurationsFrame(self):
+		Button(self.configuration, text="Export homeworks sheet", command=lambda: files.exportSheet('./Homework.xlsx')).grid(row=0, column=0, pady=5, padx=5)
+		Button(self.configuration, text="Import homeworks sheet", command=lambda: files.importSheet('./', app, main)).grid(row=1, column=0, pady=5, padx=5)
 
 	def subjectsFrame(self):
 		Label(self.subjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
