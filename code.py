@@ -124,8 +124,8 @@ class config(MainApp):
 		self.killSubjectsFrame()
 
 	def configurationsFrame(self):
-		Button(self.configuration, text="Export homeworks sheet").grid(row=0, column=0, pady=5, padx=5)
-		Button(self.configuration, text="Import homeworks sheet").grid(row=0, column=0, pady=5, padx=5)
+		Button(self.configuration, text="Export homeworks sheet", command=lambda: files.exportSheet('./Homework.xlsx')).grid(row=0, column=0, pady=5, padx=5)
+		Button(self.configuration, text="Import homeworks sheet", command=lambda: files.importSheet('./', app, main)).grid(row=1, column=0, pady=5, padx=5)
 
 	def subjectsFrame(self):
 		Label(self.subjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
