@@ -1,20 +1,21 @@
 ﻿import pandas as pd
+from pandas import ExcelWriter
 from datetime import datetime
 from datetime import date
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkcalendar import *
-from pandas import ExcelWriter
 from functions import subjects
 from functions import excel
 from functions import files
 
-subjectsAll = subjects.seeSubjects()
+subjectsAll = subjects.seeSubjects() # All subjects of the sqlite database
 
 subs_norm = list(subjectsAll[subjectsAll['type'] == 'Médio']['name'].values)
 subs_tec = list(subjectsAll[subjectsAll['type'] == 'Técnico']['name'].values)
 
-class MainApp():
+
+class MainApp:
 	def __init__(self, master):
 		self.master = master
 		self.master.title('Planilha de para casas')
@@ -221,6 +222,7 @@ class delLevel(MainApp):
 		writer.save()
 
 		app.reload_sheets()
+
 
 class newLevel(MainApp):
 	def __init__(self):
