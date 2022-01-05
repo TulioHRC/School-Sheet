@@ -5,15 +5,23 @@ from datetime import date
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkcalendar import *
+from functions import types
 from functions import subjects
 from functions import excel
 from functions import files
 
+typesAll = types.seeTypes() # All types of the sqlite database
 subjectsAll = subjects.seeSubjects() # All subjects of the sqlite database
+subs_by_type = []
+
+for i in list(typesAll['name'].values):
+	subs_by_type.append(list(subjectsAll[subjectsAll['type'] == f'{i}']['name'].values))
+
+
+######## For typesAll getting the subs_types list
 
 subs_norm = list(subjectsAll[subjectsAll['type'] == 'Médio']['name'].values)
 subs_tec = list(subjectsAll[subjectsAll['type'] == 'Técnico']['name'].values)
-
 
 class MainApp:
 	def __init__(self, master):
@@ -30,28 +38,26 @@ class MainApp:
 		self.tabs = ttk.Notebook(self.master)
 		self.tabs.grid(row=1, column=0, columnspan=3)
 
-		self.medio = Frame(self.tabs, width=450, height=200)
-		self.tec = Frame(self.tabs, width=450, height=200)
+		self.typesTabs = []
+		for i in range(len(list(typesAll['name'].values))):
+			self.typesTabs.append([])
+			self.typesTabs[i].append(Frame(self.tabs, width=450, height=200))
+			self.typesTabs[i][0].pack(fill='both', expand=True)
+			self.tabs.add(self.typesTabs[i][0], text=f"{list(typesAll['name'].values)[i]}")
+
+			self.load_sheet(self.typesTabs[i][0], list(typesAll['name'].values)[i])
+
 		self.nothing = Frame(self.tabs, width=450, height=200)
-
-		self.medio.pack(fill='both', expand=True)
-		self.tec.pack(fill='both', expand=True)
 		self.nothing.pack(fill='both', expand=True)
-
-		self.tabs.add(self.medio, text="Ensino Médio")
-		self.tabs.add(self.tec, text="Ensino Técnico")
 		self.tabs.add(self.nothing, text="")
-
-		self.load_sheet(self.medio)
-		self.load_sheet(self.tec)
 
 		Button(self.master, text="Novo", command=newLevel).grid(row=2, column=0, pady=5)
 		Button(self.master, text="Deletar", command=delLevel).grid(row=2, column=2, pady=5)
 
-	def load_sheet(self, frame):
+	def load_sheet(self, frame, name):
 		med, tec = excel.load_excel()
 
-		if frame == self.medio:
+		if name == 'Médio':
 			df = med.copy()
 		else:
 			df = tec.copy()
@@ -111,18 +117,26 @@ class config(MainApp):
 		self.configuration = Frame(self.tabs, width=450, height=300)
 		self.subjects = Frame(self.tabs, width=450, height=300)
 		self.killSubjects = Frame(self.tabs, width=450, height=300)
+		self.types = Frame(self.tabs, width=450, height=300)
+		self.killTypes = Frame(self.tabs, width=450, height=300)
 
 		self.configuration.pack(fill='both', expand=True)
 		self.subjects.pack(fill='both', expand=True)
 		self.killSubjects.pack(fill='both', expand=True)
+		self.types.pack(fill='both', expand=True)
+		self.killTypes.pack(fill='both', expand=True)
 
 		self.tabs.add(self.configuration, text="Configuration")
 		self.tabs.add(self.subjects, text="Adicionar Matérias")
 		self.tabs.add(self.killSubjects, text="Remover Matérias")
+		self.tabs.add(self.types, text="Adicionar Tipos")
+		self.tabs.add(self.killTypes, text="Remover Tipos")
 
 		self.configurationsFrame()
 		self.subjectsFrame()
 		self.killSubjectsFrame()
+		self.typesFrame()
+		self.killTypesFrame()
 
 	def configurationsFrame(self):
 		Button(self.configuration, text="Export homeworks sheet", command=lambda: files.exportSheet('./Homework.xlsx')).grid(row=0, column=0, pady=5, padx=5)
@@ -155,6 +169,28 @@ class config(MainApp):
 				self.namek.get(), app, main)).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
 		except:
 			Label(self.killSubjects, text="Subjects are not created yet.").grid(row=0, column=0, pady=5, padx=5)
+
+	def typesFrame(self):
+		Label(self.types, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+		self.namety = Entry(self.types)
+		self.namety.grid(row=0, column=1, pady=5, padx=5)
+
+		Button(self.types, text="Add type", command=lambda: types.addType(self.namety.get(
+		), app, main)).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
+
+	def killTypesFrame(self):
+		try:
+			tipos = types.seeTypes()
+
+			Label(self.killTypes, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+			self.nametk = StringVar()
+			self.nt = OptionMenu(self.killTypes, self.nametk, *tipos["name"].values)
+			self.nt.grid(row=0, column=1)
+
+			Button(self.killTypes, text="Remove Type", command=lambda: types.removeType(
+				self.nametk.get(), app, main)).grid(row=1, column=0, columnspan=2, pady=5, padx=5)
+		except Exception as e:
+			Label(self.killTypes, text="Types are not created yet.").grid(row=0, column=0, pady=5, padx=5)
 
 
 class delLevel(MainApp):
@@ -319,12 +355,14 @@ class newLevel(MainApp):
 
 
 def main():
-	global app, root, subjectsAll, subs_norm, subs_tec
+	global app, root, typesAll, subjectsAll, subs_by_type, subs_norm, subs_tec
 
-	subjectsAll = subjects.seeSubjects()
+	typesAll = types.seeTypes() # All types of the sqlite database
+	subjectsAll = subjects.seeSubjects() # All subjects of the sqlite database
+	subs_by_type = []
 
-	subs_norm = list(subjectsAll[subjectsAll['type'] == 'Médio']['name'].values)
-	subs_tec = list(subjectsAll[subjectsAll['type'] == 'Técnico']['name'].values)
+	for i in list(typesAll['name'].values):
+		subs_by_type.append(list(subjectsAll[subjectsAll['type'] == f'{i}']['name'].values))
 
 	root = Tk()
 	app = MainApp(root)
