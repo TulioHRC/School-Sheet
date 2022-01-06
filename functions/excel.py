@@ -2,7 +2,7 @@ from datetime import date, datetime
 import pandas as pd
 
 # Load excel dataframe function
-def load_excel():
+def load_excel(type):
 	hj = date.today()
 
 	df = pd.read_excel(r"./Homework.xlsx", engine='openpyxl')
@@ -31,7 +31,6 @@ def load_excel():
 	df["Valor"] = df["Valor"].fillna("0")
 	df = df.sort_values(by=["Prazo restante"], ascending=True)
 
-	medio = df[df["Tipo"] == "Medio"]
-	tec = df[df["Tipo"] == "Tecnico"]
+	returned = df[df["Tipo"] == f"{type}"]
 
-	return medio[["Nome", "Matéria", "Valor", "Grupo", "Prazo restante"]], tec[["Nome", "Matéria", "Valor", "Grupo", "Prazo restante"]]
+	return returned[["Nome", "Matéria", "Valor", "Grupo", "Prazo restante"]]
