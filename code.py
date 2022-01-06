@@ -17,12 +17,6 @@ subs_by_type = []
 for i in list(typesAll['name'].values):
 	subs_by_type.append(list(subjectsAll[subjectsAll['type'] == f'{i}']['name'].values))
 
-
-######## For typesAll getting the subs_types list
-
-subs_norm = list(subjectsAll[subjectsAll['type'] == 'Médio']['name'].values)
-subs_tec = list(subjectsAll[subjectsAll['type'] == 'Técnico']['name'].values)
-
 class MainApp:
 	def __init__(self, master):
 		self.master = master
@@ -55,12 +49,7 @@ class MainApp:
 		Button(self.master, text="Deletar", command=delLevel).grid(row=2, column=2, pady=5)
 
 	def load_sheet(self, frame, name):
-		med, tec = excel.load_excel()
-
-		if name == 'Médio':
-			df = med.copy()
-		else:
-			df = tec.copy()
+		df = excel.load_excel(name).copy()
 
 		# Referencee: https://gist.github.com/RamonWill/0686bd8c793e2e755761a8f20a42c762
 		tv1 = ttk.Treeview(frame)
@@ -83,26 +72,23 @@ class MainApp:
 		    tv1.insert("", "end", values=row) # inserts each list into the treeview. For parameters see https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview.insert
 
 	def reload_sheets(self):
- 		self.medio.destroy()
- 		self.tec.destroy()
- 		self.nothing.destroy()
+		self.nothing.destroy()
 
- 		self.medio = Frame(self.tabs, width=450, height=200)
- 		self.tec = Frame(self.tabs, width=450, height=200)
- 		self.nothing = Frame(self.tabs, width=450, height=200)
+		for i in range(len(list(typesAll['name'].values))):
+			self.typesTabs[i][0].destroy()
 
- 		self.medio.pack(fill='both', expand=True)
- 		self.tec.pack(fill='both', expand=True)
- 		self.nothing.pack(fill='both', expand=True)
+		self.typesTabs = []
+		for i in range(len(list(typesAll['name'].values))):
+			self.typesTabs.append([])
+			self.typesTabs[i].append(Frame(self.tabs, width=450, height=200))
+			self.typesTabs[i][0].pack(fill='both', expand=True)
+			self.tabs.add(self.typesTabs[i][0], text=f"{list(typesAll['name'].values)[i]}")
 
- 		self.tabs.add(self.medio, text="Ensino Médio")
- 		self.tabs.add(self.tec, text="Ensino Técnico")
- 		self.tabs.add(self.nothing, text="")
+			self.load_sheet(self.typesTabs[i][0], list(typesAll['name'].values)[i])
 
- 		self.load_sheet(self.medio)
- 		self.load_sheet(self.tec)
-
- 		print('reloaded')
+		self.nothing = Frame(self.tabs, width=450, height=200)
+		self.nothing.pack(fill='both', expand=True)
+		self.tabs.add(self.nothing, text="")
 
 
 class config(MainApp):
@@ -143,18 +129,21 @@ class config(MainApp):
 		Button(self.configuration, text="Import homeworks sheet", command=lambda: files.importSheet('./', app, main)).grid(row=1, column=0, pady=5, padx=5)
 
 	def subjectsFrame(self):
-		Label(self.subjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
-		self.name = Entry(self.subjects)
-		self.name.grid(row=0, column=1, pady=5, padx=5)
+		try:
+			Label(self.subjects, text="Name: ").grid(row=0, column=0, pady=5, padx=5)
+			self.name = Entry(self.subjects)
+			self.name.grid(row=0, column=1, pady=5, padx=5)
 
-		Label(self.subjects, text="Type: ").grid(row=1, column=0, padx=2, pady=2)
-		self.type = StringVar()
-		self.type.set('Médio')
-		self.t = OptionMenu(self.subjects, self.type, *["Médio", "Técnico"])
-		self.t.grid(row=1, column=1)
+			Label(self.subjects, text="Type: ").grid(row=1, column=0, padx=2, pady=2)
+			self.type = StringVar()
+			self.type.set(list(typesAll['name'].values)[0])
+			self.t = OptionMenu(self.subjects, self.type, *list(typesAll['name'].values))
+			self.t.grid(row=1, column=1)
 
-		Button(self.subjects, text="Add Subject", command=lambda: subjects.addSubject(self.name.get(
-		), self.type.get(), app, main)).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
+			Button(self.subjects, text="Add Subject", command=lambda: subjects.addSubject(self.name.get(
+			), self.type.get(), app, main)).grid(row=2, column=0, columnspan=2, pady=5, padx=5)
+		except:
+			Label(self.subjects, text="There're no types created!").grid(row=1, column=0, padx=2, pady=2)
 
 	def killSubjectsFrame(self):
 		try:
@@ -200,9 +189,14 @@ class delLevel(MainApp):
 		self.newScreen.iconbitmap('./images/alarm.ico')
 
 		try:
+			allSubs = []
+
+			for type in subs_by_type:
+				allSubs += type
+
 			Label(self.newScreen, text="Matéria: ").grid(row=0, column=0, padx=2, pady=2)
 			self.subject = StringVar()
-			self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm+subs_tec, command=self.changeL)
+			self.Options = OptionMenu(self.newScreen, self.subject, *allSubs, command=self.changeL)
 			self.Options.grid(row=0, column=1)
 
 			Label(self.newScreen, text="Nome: ").grid(row=0, column=2, padx=2, pady=2)
@@ -272,14 +266,14 @@ class newLevel(MainApp):
 
 		Label(self.newScreen, text="Tipo: ").grid(row=1, column=0, padx=2, pady=2)
 		self.type = StringVar()
-		self.type.set('Medio')
-		self.types = OptionMenu(self.newScreen, self.type, *["Medio", "Tecnico"], command=self.changeOps)
+		self.type.set(list(typesAll['name'].values)[0])
+		self.types = OptionMenu(self.newScreen, self.type, *list(typesAll['name'].values), command=self.changeOps)
 		self.types.grid(row=1, column=1)
 
 		try:
 			Label(self.newScreen, text="Matéria: ").grid(row=2, column=0, padx=2, pady=2)
 			self.subject = StringVar()
-			self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm)
+			self.Options = OptionMenu(self.newScreen, self.subject, *subs_by_type[0])
 			self.Options.grid(row=2, column=1)
 
 			Label(self.newScreen, text="Valor: ").grid(row=0, column=2, padx=2, pady=2)
@@ -309,12 +303,14 @@ class newLevel(MainApp):
 
 	def changeOps(self, value):
 		self.Options.destroy()
-		if value == "Medio":
-			self.Options = OptionMenu(self.newScreen, self.subject, *subs_norm)
+
+		position = list(typesAll['name'].values).index(value)
+
+		try:
+			self.Options = OptionMenu(self.newScreen, self.subject, *subs_by_type[position])
 			self.Options.grid(row=2, column=1)
-		else:
-			self.Options = OptionMenu(self.newScreen, self.subject, *subs_tec)
-			self.Options.grid(row=2, column=1)
+		except:
+			self.Options = Label(self.newScreen, "There's no subject in this type")
 
 	def create(self):
 		try:
